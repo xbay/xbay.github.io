@@ -1,0 +1,695 @@
+<!doctype html>
+<html class="theme-next use-motion ">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  
+    <link href='//fonts.lug.ustc.edu.cn/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  
+
+
+<link rel="stylesheet" type="text/css" href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" />
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.2"/>
+
+
+
+
+  <meta name="keywords" content="scala,scalaz,optionT,Option,Future,Monad," />
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+<meta name="description" content="scala里使用Option类型来封装一个可能为null的引用，和Java引用相比，它避免了直接操作null引发的异常。一般来说可以用switch/case来处理Option，比如要把一个Int对象转成一个String对象：123456def f(p: Option[Int]): Option[String] = &amp;#123;  p match &amp;#123;    case Some(i) =&amp;g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用scalaz的optionT让业务代码变得更简洁">
+<meta property="og:url" content="http://xbay.github.io/2016/02/26/scalaz_optionT/index.html">
+<meta property="og:site_name" content="xbay">
+<meta property="og:description" content="scala里使用Option类型来封装一个可能为null的引用，和Java引用相比，它避免了直接操作null引发的异常。一般来说可以用switch/case来处理Option，比如要把一个Int对象转成一个String对象：123456def f(p: Option[Int]): Option[String] = &amp;#123;  p match &amp;#123;    case Some(i) =&amp;g">
+<meta property="og:updated_time" content="2016-03-31T02:07:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用scalaz的optionT让业务代码变得更简洁">
+<meta name="twitter:description" content="scala里使用Option类型来封装一个可能为null的引用，和Java引用相比，它避免了直接操作null引发的异常。一般来说可以用switch/case来处理Option，比如要把一个Int对象转成一个String对象：123456def f(p: Option[Int]): Option[String] = &amp;#123;  p match &amp;#123;    case Some(i) =&amp;g">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post'
+  };
+</script>
+
+
+
+  <title> 用scalaz的optionT让业务代码变得更简洁 | xbay </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title"></span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                用scalaz的optionT让业务代码变得更简洁
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-02-26T23:19:50+08:00" content="2016-02-26">
+              2016-02-26
+            </time>
+          </span>
+
+          
+
+          
+          <span class="post-time">
+          &nbsp; | &nbsp;
+          
+            <span itemprop="name">uni.x.bell</span>
+          
+
+
+          </span>
+
+          
+
+
+          
+            
+              <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2016/02/26/scalaz_optionT/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/02/26/scalaz_optionT/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>scala里使用Option类型来封装一个可能为null的引用，和Java引用相比，它避免了直接操作null引发的异常。一般来说可以用switch/case来处理Option，比如要把一个Int对象转成一个String对象：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f</span></span>(p: <span class="type">Option</span>[<span class="type">Int</span>]): <span class="type">Option</span>[<span class="type">String</span>] = &#123;</span><br><span class="line">  p <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="type">Some</span>(i) =&gt; i.toString</span><br><span class="line">    <span class="keyword">case</span> <span class="type">None</span> =&gt; <span class="type">None</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>和Java里判断引用是否为空的代码其实是类似的，不过Option的封装保证了程序员不会忘记处理空的情况－－除非程序员使用get取值，非常不推荐这样做：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p.get.toString</span><br></pre></td></tr></table></figure></p>
+<p>跟Java一样，这样写代码很容易收获一个空引用异常。<br>不过通过Option的map函数能把代码写得跟用get求值一样简洁，还不会引发空引用异常。<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f</span></span>(p: <span class="type">Option</span>[<span class="type">Int</span>]): <span class="type">Option</span>[<span class="type">String</span>] = p.map(_.toString)</span><br></pre></td></tr></table></figure></p>
+<p>map函数只在Option为Some()的时候调用传入的函数，也就是说，None被直接“短路”到输出了，这对于大部分情况都是适用的。</p>
+<hr>
+<p>scala里用Future来封装IO操作，代表”未来可能会获得某个值“。比如发起一个HTTP请求或者访问数据库，函数会返回一个Future，和Option有点类似，Future也有俩状态，一个是成功一个是失败。所以常用的方法也是map。<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f</span></span>(p: <span class="type">Future</span>[<span class="type">Int</span>]): <span class="type">Future</span>[<span class="type">String</span>] = p.map(_.toString)</span><br></pre></td></tr></table></figure></p>
+<p>当IO成功的时候，获得的值会被用做参数，调用map里传入的函数，失败则直接“短路”到输出。<br>我们还可以用flatMap简单的把IO“串联”起来：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readById</span></span>(id: <span class="type">Int</span>): <span class="type">Future</span>[<span class="type">String</span>] = ...</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readByName</span></span>(name: <span class="type">String</span>): <span class="type">Future</span>[<span class="type">Result</span>] = ...</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getResult</span></span>(p: <span class="type">Future</span>[<span class="type">Int</span>]): <span class="type">Future</span>[<span class="type">Result</span>] = p.flatMap(id =&gt; &#123;</span><br><span class="line">  readById(id).flatMap(name =&gt; &#123;</span><br><span class="line">    readByName(name)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>这么写在形式上有个弱点，类似回调函数，每次串联都会带来一层缩进，影响可读性。scala提供了for来处理这个问题，下面这段代码和上面的多层flatMap是等价的：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readById</span></span>(id: <span class="type">Int</span>): <span class="type">Future</span>[<span class="type">String</span>] = ...</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readByName</span></span>(name: <span class="type">String</span>): <span class="type">Future</span>[<span class="type">Result</span>] = ...</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getResult</span></span>(p: <span class="type">Future</span>[<span class="type">Int</span>]): <span class="type">Future</span>[<span class="type">Result</span>] = <span class="keyword">for</span> &#123;</span><br><span class="line">  id &lt;- p</span><br><span class="line">  name &lt;- readById(id)</span><br><span class="line">  result &lt;- readByName(name)</span><br><span class="line">&#125; <span class="keyword">yield</span>(result)</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>不过真实世界里的代码会稍微复杂一些，我们经常会混用Future和Option，最常见的是IO返回的对象里，某些属性可能为空，我们用Option来表示这些属性的话，意味着代码逻辑里会出现Future[Option[T]]这样的类型。我们当然可以在Future的map/flatMap里用match/case来写逻辑，其实也比较清晰，但是缩进的层数会比较多，影响可读性。来看一段实际的例子，这是从真实世界的业务代码里拷贝/粘贴出来的：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cityCodeFriendly</span></span>(term: <span class="type">Option</span>[<span class="type">String</span>]): <span class="type">Future</span>[<span class="type">Option</span>[<span class="type">JsValue</span>]] = &#123;</span><br><span class="line">  term <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="type">Some</span>(cityCode) =&gt; &#123;</span><br><span class="line">      <span class="type">AreaService</span>.findOneByCode(cityCode) flatMap &#123; cityOption =&gt;</span><br><span class="line">        cityOption <span class="keyword">match</span> &#123;</span><br><span class="line">          <span class="keyword">case</span> <span class="type">Some</span>(city) =&gt; &#123;</span><br><span class="line">            <span class="type">AreaService</span>.findOneByCode(city.parentCode.getOrElse(<span class="string">""</span>)) map &#123; provinceOption =&gt;</span><br><span class="line">              provinceOption <span class="keyword">match</span> &#123;</span><br><span class="line">                <span class="keyword">case</span> <span class="type">Some</span>(province) =&gt; &#123;</span><br><span class="line">                  <span class="type">Some</span>(<span class="type">JsObject</span>(<span class="type">Seq</span>(<span class="string">"provinceName"</span> -&gt; <span class="type">JsString</span>(province.name.getOrElse(<span class="string">""</span>)),</span><br><span class="line">                    <span class="string">"cityName"</span> -&gt; <span class="type">JsString</span>(city.name.getOrElse(<span class="string">""</span>)),</span><br><span class="line">                    <span class="string">"cityCode"</span> -&gt; <span class="type">JsString</span>(cityCode))))</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> <span class="type">None</span> =&gt; <span class="type">None</span></span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">case</span> <span class="type">None</span> =&gt; <span class="type">Future</span>(<span class="type">None</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">case</span> <span class="type">None</span> =&gt; <span class="type">Future</span>(<span class="type">None</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>代码逻辑还是比较清晰的：传入一个城市id（可能为空），然后从数据库里依次读取城市的名称和所属省份的名称，最后把结果组装成一个json对象输出，只要中间有一步读到空值，就输出一个空的json对象。代码风格看起来有两个问题，一是缩进太多，第二是case None =&gt; None看起来很多余。<br>试试用Option的flatMap来改造一下，得到如下的代码：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cityCodeFriendly</span></span>(term: <span class="type">Option</span>[<span class="type">String</span>]): <span class="type">Future</span>[<span class="type">Option</span>[<span class="type">JsValue</span>]] = &#123;</span><br><span class="line">  term.map(cityCode =&gt; &#123;</span><br><span class="line">    <span class="type">AreaService</span></span><br><span class="line">    .findOneByCode(cityCode)</span><br><span class="line">    .flatMap(cityOption =&gt; &#123;</span><br><span class="line">      cityOption.map(city =&gt; &#123;</span><br><span class="line">        city.parentCode.map(parentCode =&gt; &#123;</span><br><span class="line">          <span class="type">AreaService</span>.findOneByCode(parentCode).map(provinceOption =&gt; &#123;</span><br><span class="line">            provinceOption.map(province =&gt;</span><br><span class="line">              <span class="type">JsObject</span>(<span class="type">Seq</span>(<span class="string">"provinceName"</span> -&gt; <span class="type">JsString</span>(province.name.getOrElse(<span class="string">""</span>)),</span><br><span class="line">                <span class="string">"cityName"</span> -&gt; <span class="type">JsString</span>(city.name.getOrElse(<span class="string">""</span>)),</span><br><span class="line">                <span class="string">"cityCode"</span> -&gt; <span class="type">JsString</span>(cityCode))))</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;).getOrElse(<span class="type">Future</span>(<span class="type">None</span>))</span><br><span class="line">      &#125;).getOrElse(<span class="type">Future</span>(<span class="type">None</span>))</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;).getOrElse(<span class="type">Future</span>(<span class="type">None</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>看起来更糟糕了，Future的flatMap只能和Future级联，Option的flatMap只能和Option的级联，所以两者都用flatMap其实并无好处，反而需要用.getOrElse(Future(None))来处理分支的情形，比switch/case更不清晰，缩进只是略少，总体来说得不偿失。<br>因为Future和Option的flatMap互相不能级联，所以我们没发用for把它们串联起来，看看flatMap写法里的getOrElse就知道了。<br>但是从逻辑上来说，应该存在一种方法，能把Future和Option串起来，中间只要有Future.failure就短路到Future.failure，只要有Future(None)就短路到Future(None)，这是一个很机械的逻辑，编译器应该能处理。<br>scalaz提供的optionT函数，就能做到这一点。改造后实现看起来清爽多了：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cityCodeFriendly</span></span>(term: <span class="type">Option</span>[<span class="type">String</span>]): <span class="type">Future</span>[<span class="type">Option</span>[<span class="type">JsValue</span>]] = &#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">wrapCityCode</span></span>: <span class="type">Future</span>[<span class="type">Option</span>[<span class="type">String</span>]] = <span class="type">Future</span>(term)</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">wrapJsObject</span></span>(province: <span class="type">Area</span>, city:<span class="type">Area</span>, cityCode: <span class="type">String</span>): <span class="type">Future</span>[<span class="type">Option</span>[<span class="type">JsValue</span>]] = </span><br><span class="line">    <span class="type">Future</span>(<span class="type">Some</span>(<span class="type">JsObject</span>(<span class="type">Seq</span>(</span><br><span class="line">      <span class="string">"provinceName"</span> -&gt; <span class="type">JsString</span>(province.name.getOrElse(<span class="string">""</span>)),</span><br><span class="line">      <span class="string">"cityName"</span> -&gt; <span class="type">JsString</span>(city.name.getOrElse(<span class="string">""</span>)),</span><br><span class="line">      <span class="string">"cityCode"</span> -&gt; <span class="type">JsString</span>(cityCode)))))</span><br><span class="line">      </span><br><span class="line">  (<span class="keyword">for</span> &#123;</span><br><span class="line">    cityCode &lt;- optionT(wrapCityCode)</span><br><span class="line">    city &lt;- optionT(<span class="type">AreaService</span>.findOneByCode(cityCode))</span><br><span class="line">    parentCode &lt;- optionT(<span class="type">Future</span>(city.parentCode))</span><br><span class="line">    province &lt;- optionT(<span class="type">AreaService</span>.findOneByCode(parentCode))</span><br><span class="line">    res &lt;- optionT(wrapJsObject(province, city, cityCode))</span><br><span class="line">  &#125; <span class="keyword">yield</span> res).run</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>optionT函数接收一个Future[Option[T]]类型，返回一个封装好的OptionT类型，OptionT类型相当于“混合”了Future和Option的特性，它提供了map/flatMap函数，只针对成功并有值的情况调用传入的函数，否则直接“短路”到输出。这样的写法不但让代码变得简洁（平板的结构，很少的缩进），而且在编写过程中不需要再去关注错误处理（不需要再加入case None =&gt; None 或者 getOrElse之类的玩意了）。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/scala/" rel="tag">#scala</a>
+          
+            <a href="/tags/scalaz/" rel="tag">#scalaz</a>
+          
+            <a href="/tags/optionT/" rel="tag">#optionT</a>
+          
+            <a href="/tags/Option/" rel="tag">#Option</a>
+          
+            <a href="/tags/Future/" rel="tag">#Future</a>
+          
+            <a href="/tags/Monad/" rel="tag">#Monad</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/26/sortInScala/" rel="next" title="基本排序算法的Scala实现">
+                <i class="fa fa-chevron-left"></i> 基本排序算法的Scala实现
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/31/React-Native-NativeComponent/" rel="prev" title="ReactNative-NativeComponent -- 1. 官方指引">
+                ReactNative-NativeComponent -- 1. 官方指引 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+              <div id="disqus_thread">
+                <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+              </div>
+            
+          </div>
+        
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/default_avatar.png" alt="Alan, Bob, Mactive, Victor, Raven, Luka, Yak, Uni.Bell" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">Alan, Bob, Mactive, Victor, Raven, Luka, Yak, Uni.Bell</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">20</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.github.com/xbay" target="_blank">
+                  <i class="fa fa-github"></i> GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.twitter.com/xbay" target="_blank">
+                  <i class="fa fa-twitter"></i> Twitter
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alan, Bob, Mactive, Victor, Raven, Luka, Yak, Uni.Bell</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+    
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'xbay';
+      var disqus_identifier = '2016/02/26/scalaz_optionT/';
+      var disqus_title = '用scalaz的optionT让业务代码变得更简洁';
+      var disqus_url = 'http://xbay.github.io/2016/02/26/scalaz_optionT/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.2" id="motion.global"></script>
+
+
+
+
+  <script type="text/javascript" src="/js/nav-toggle.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+      if (isMobile()) {
+        FastClick.attach(document.body);
+      }
+
+      motionIntegrator.bootstrap();
+    });
+  </script>
+
+  
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

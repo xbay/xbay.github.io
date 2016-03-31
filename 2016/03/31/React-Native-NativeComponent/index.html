@@ -1,0 +1,718 @@
+<!doctype html>
+<html class="theme-next use-motion ">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  
+    <link href='//fonts.lug.ustc.edu.cn/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  
+
+
+<link rel="stylesheet" type="text/css" href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" />
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.2"/>
+
+
+
+
+  <meta name="keywords" content="Objective-C,ReactNative,Component," />
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+<meta name="description" content="Native-Module 基本分为两种
+可见的Module. (显示,原生动画)View 本身继承自RCTView,如果想要在JS中使用,需要再实现一个 Manager
+不可见的Module. (数据,网络,modeling)需要实现 delegate
+
+今天我们来讲讲第二种不可见的Module
+Module 和 method的关系One Module
+-&amp;gt; MethodA-&amp;gt; Me">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReactNative-NativeComponent -- 1. 官方指引">
+<meta property="og:url" content="http://xbay.github.io/2016/03/31/React-Native-NativeComponent/index.html">
+<meta property="og:site_name" content="xbay">
+<meta property="og:description" content="Native-Module 基本分为两种
+可见的Module. (显示,原生动画)View 本身继承自RCTView,如果想要在JS中使用,需要再实现一个 Manager
+不可见的Module. (数据,网络,modeling)需要实现 delegate
+
+今天我们来讲讲第二种不可见的Module
+Module 和 method的关系One Module
+-&amp;gt; MethodA-&amp;gt; Me">
+<meta property="og:updated_time" content="2016-03-31T02:16:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReactNative-NativeComponent -- 1. 官方指引">
+<meta name="twitter:description" content="Native-Module 基本分为两种
+可见的Module. (显示,原生动画)View 本身继承自RCTView,如果想要在JS中使用,需要再实现一个 Manager
+不可见的Module. (数据,网络,modeling)需要实现 delegate
+
+今天我们来讲讲第二种不可见的Module
+Module 和 method的关系One Module
+-&amp;gt; MethodA-&amp;gt; Me">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post'
+  };
+</script>
+
+
+
+  <title> ReactNative-NativeComponent -- 1. 官方指引 | xbay </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title"></span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ReactNative-NativeComponent -- 1. 官方指引
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-03-31T12:03:15+08:00" content="2016-03-31">
+              2016-03-31
+            </time>
+          </span>
+
+          
+
+          
+          <span class="post-time">
+          &nbsp; | &nbsp;
+          
+            <span itemprop="name">mac.meng</span>
+          
+
+
+          </span>
+
+          
+
+
+          
+            
+              <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2016/03/31/React-Native-NativeComponent/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/03/31/React-Native-NativeComponent/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h2 id="Native-Module-基本分为两种"><a href="#Native-Module-基本分为两种" class="headerlink" title="Native-Module 基本分为两种"></a>Native-Module 基本分为两种</h2><ul>
+<li>可见的Module. (显示,原生动画)<br>View 本身继承自RCTView,如果想要在JS中使用,需要再实现一个 Manager</li>
+<li>不可见的Module. (数据,网络,modeling)<br>需要实现 <rctbridgemodule>delegate</rctbridgemodule></li>
+</ul>
+<p>今天我们来讲讲第二种不可见的Module</p>
+<h3 id="Module-和-method的关系"><a href="#Module-和-method的关系" class="headerlink" title="Module 和 method的关系"></a>Module 和 method的关系</h3><h4 id="One-Module"><a href="#One-Module" class="headerlink" title="One Module"></a>One Module</h4><blockquote>
+<p>-&gt; MethodA<br>-&gt; MethodB<br>…<br>-&gt; MethodN</p>
+</blockquote>
+<h3 id="官方指引"><a href="#官方指引" class="headerlink" title="官方指引"></a><a href="http://facebook.github.io/react-native/docs/native-modules-ios.html#content" target="_blank" rel="external">官方指引</a></h3><ol>
+<li>正常的参数, 所有json格式的参数<br>而且有个强大的Util RCTConvert.h 从字体,颜色,string,number都可以转换</li>
+<li>支持回调 callback, 可以传function进去<br>原生类型是 RCTResponseSenderBlock<br>和传参都是 用RCT_EXPORT_METHOD 声明</li>
+<li><p>支持Promise<br>但是需要用到 RCT_REMAP_METHOD 声明,再辅助两个block<br>RCTPromiseResolveBlock/ RCTPromiseRejectBlock<br>JS 层面 用  ES2016 <strong>async/await</strong> 去写, 这个需要看一下</p>
+</li>
+<li><p>接下来讲多线程<br>methodQueue 是在一个Module下的所有method共享的, 要么这个module是在主线程上执行,要么就是在某个线程上执行. 而且大家可以共享这个线程<br>如果我有一个方法需要单独在新的线程上执行怎么办,比如相对耗时的存储等等.我可以在方法里面 用dispatch_async包一下执行代码,执行完之后可以用 2.里面提到的callback通知外面<br>最后提到了 在不同的Module中共享线程,比较高深</p>
+</li>
+<li><p>导出常量<br>返回Dictionary的native method 在初始化的时候完成赋值,运行时的时候再改变他,js也拿不到最新的值.<br>如果要枚举常量,他建议新建一个RCTConvert的extension</p>
+</li>
+<li>向JS发送Event<br>如何使用 bridge.eventDispatcher, 如何在native send 以及如何在JS subscription. 这样Native 也可作用在JS上了,这是除了 callback的另一种实现.<br>采用的是观察者模式. 如果想用JS作用在Native上直接调取Native 用RCT_EXPORT_METHOD 暴露出来的函数就好了,各种回调,promise,sender伺候你.</li>
+</ol>
+<p>这里多数一句,我们在OC里常用的传递消息的方式有很多 KVO,Delegate,Block. 还有高逼格的NSOperation,GCD 等等.基本上RN都用了.可见facebook的原生功力还是比较深厚的</p>
+<ol>
+<li>最后提到了如何在swift 用RN,然并卵.</li>
+</ol>
+<h3 id="RN-ReactNative"><a href="#RN-ReactNative" class="headerlink" title="RN = ReactNative"></a>RN = ReactNative</h3><p>————</p>
+<h4 id="有兴趣的同学可以读一下具体-Module-和-Method-的原生实现"><a href="#有兴趣的同学可以读一下具体-Module-和-Method-的原生实现" class="headerlink" title="有兴趣的同学可以读一下具体 Module 和 Method 的原生实现"></a>有兴趣的同学可以读一下具体 Module 和 Method 的原生实现</h4><blockquote>
+<p>关于Bridge的一篇facebook的<a href="http://tadeuzagallo.com/blog/react-native-bridge/" target="_blank" rel="external">内部剖析</a><br>如何优化RNApp性能的<a href="https://code.facebook.com/posts/895897210527114/dive-into-react-native-performance/" target="_blank" rel="external">官方介绍</a></p>
+</blockquote>
+<h4 id="next"><a href="#next" class="headerlink" title="next"></a>next</h4><p>下一部分准备按照官方的指引写一个Demo 把这些点传起来</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Objective-C/" rel="tag">#Objective-C</a>
+          
+            <a href="/tags/ReactNative/" rel="tag">#ReactNative</a>
+          
+            <a href="/tags/Component/" rel="tag">#Component</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/26/scalaz_optionT/" rel="next" title="用scalaz的optionT让业务代码变得更简洁">
+                <i class="fa fa-chevron-left"></i> 用scalaz的optionT让业务代码变得更简洁
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+              <div id="disqus_thread">
+                <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+              </div>
+            
+          </div>
+        
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/default_avatar.png" alt="Alan, Bob, Mactive, Victor, Raven, Luka, Yak, Uni.Bell" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">Alan, Bob, Mactive, Victor, Raven, Luka, Yak, Uni.Bell</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">分类</span>
+              
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">20</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.github.com/xbay" target="_blank">
+                  <i class="fa fa-github"></i> GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.twitter.com/xbay" target="_blank">
+                  <i class="fa fa-twitter"></i> Twitter
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Native-Module-基本分为两种"><span class="nav-number">1.</span> <span class="nav-text">Native-Module 基本分为两种</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Module-和-method的关系"><span class="nav-number">1.1.</span> <span class="nav-text">Module 和 method的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#One-Module"><span class="nav-number">1.1.1.</span> <span class="nav-text">One Module</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#官方指引"><span class="nav-number">1.2.</span> <span class="nav-text">官方指引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RN-ReactNative"><span class="nav-number">1.3.</span> <span class="nav-text">RN = ReactNative</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#有兴趣的同学可以读一下具体-Module-和-Method-的原生实现"><span class="nav-number">1.3.1.</span> <span class="nav-text">有兴趣的同学可以读一下具体 Module 和 Method 的原生实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#next"><span class="nav-number">1.3.2.</span> <span class="nav-text">next</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alan, Bob, Mactive, Victor, Raven, Luka, Yak, Uni.Bell</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+    
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'xbay';
+      var disqus_identifier = '2016/03/31/React-Native-NativeComponent/';
+      var disqus_title = 'ReactNative-NativeComponent -- 1. 官方指引';
+      var disqus_url = 'http://xbay.github.io/2016/03/31/React-Native-NativeComponent/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.2" id="motion.global"></script>
+
+
+
+
+  <script type="text/javascript" src="/js/nav-toggle.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+      if (isMobile()) {
+        FastClick.attach(document.body);
+      }
+
+      motionIntegrator.bootstrap();
+    });
+  </script>
+
+  
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>
