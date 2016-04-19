@@ -179,6 +179,120 @@
             
             
               
+                <a class="post-title-link" href="/2016/04/19/shadowsocks_proxychainsNG_iterms2/" itemprop="url">
+                  ShadowSocks+ProxyChains-NG 实现终端(iTerm2)下代理
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2016-04-19T08:31:15+08:00" content="2016-04-19">
+              2016-04-19
+            </time>
+          </span>
+
+          
+
+          
+          <span class="post-time">
+          &nbsp; | &nbsp;
+          
+            <span itemprop="name">mac.meng</span>
+          
+
+
+          </span>
+
+          
+
+
+          
+            
+              <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2016/04/19/shadowsocks_proxychainsNG_iterms2/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/04/19/shadowsocks_proxychainsNG_iterms2/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <span itemprop="articleBody">
+            
+              <p><a href="https://segmentfault.com/a/1190000004607285" target="_blank" rel="external">参考原文</a></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>使用 Homebrew 安装 proxychains-ng<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ $ brew install proxychains-ng</span><br></pre></td></tr></table></figure></p>
+<h3 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/local/etc/proxychains.conf</span><br></pre></td></tr></table></figure>
+<p>在 [ProxyList] 下面（也就是末尾）加入代理类型，代理地址和端口<br>注释掉原来的代理并添加, 1080 就是默认的shadowSocks 本地代理端口号,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socks5 127.0.0.1 1080</span><br></pre></td></tr></table></figure>
+<p>如果有的软件支持socks5代理, 比如 <strong>dropbox</strong> ,可以直接设置, </p>
+<blockquote>
+<p>我们在这里搞这么多飞机就是因为, iTerm2 不支持配置代理,而且就算你在系统设置了也不管用.</p>
+</blockquote>
+<p>如果所在的网络很复杂，可能需要在配置文件中启用<br>dynamic_chain - 按照列表中出现的代理服务器的先后顺序组成一条链，如果有代理服务器失效，则自动将其排除，但至少要有一个是有效的<br>然后在 [ProxyList] 下添加多个代理<br>默认：strict_chain - 按照后面列表中出现的代理服务器的先后顺序组成一条链，要求所有的代理服务器都是有效的</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>  proxychains4 curl google.com<br>注意：proxychains支持的是socks，http, https协议.它们以tcp或者udp协议为基础, ping命令用的是 ICMP 协议， proxychains 不支持;</p>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><p>alias 命令别名<br>直接在命令行中输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ $ alias pc=&quot;proxychains4”</span><br></pre></td></tr></table></figure>
+<p>iTerm中前缀补全<br>你输了很长一段命令，然后你突然想使用代理功能，怎么办？<br>我想你应该会复制一下，然后重写；<br>现在你可以这样做：</p>
+<p>在 iTerm -&gt; Preferences -&gt; Profiles -&gt; Keys 中，新建一个快捷键，例如 ⌥(alt) + p ，Action 选择 Send Hex Code，键值为 0x1 0x70 0x63 0x20 0xd，保存生效。这个 HexCode 用 <a href="http://www.rapidtables.com/convert/number/hex-to-ascii.htm" target="_blank" rel="external">hexCodeToAsciiText</a> 就是 “pc”两个字母</p>
+<p>以后命令要代理就直接敲命令，然后 ⌥ + p 即可，这样命令补全也能保留了。<br>比如 git clone, npm install 加速等等.</p>
+<h3 id="推荐-福利"><a href="#推荐-福利" class="headerlink" title="推荐(福利)"></a>推荐(福利)</h3><p>最后推荐一个下载视频的神器 <a href="https://github.com/soimort/you-get" target="_blank" rel="external">you-get</a>可以下载国内外主流的视频网站的视频,made by python3. 也可以配置 proxychains4使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ $ pc you-get https://www.youtube.com/watch?v=fwoDwajwqdo</span><br></pre></td></tr></table></figure>
+<h3 id="谜团"><a href="#谜团" class="headerlink" title="谜团"></a>谜团</h3><p>关于使用shadowSocks 时,dns是不是一起走了代理了,这里面还有很多网络知识不是特别明白</p>
+
+            
+          </span>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
                 <a class="post-title-link" href="/2016/03/31/React-Native-NativeComponent/" itemprop="url">
                   ReactNative-NativeComponent -- 1. 官方指引
                 </a>
@@ -1152,7 +1266,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">10</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1166,7 +1280,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">20</span>
+              <span class="site-state-item-count">23</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>

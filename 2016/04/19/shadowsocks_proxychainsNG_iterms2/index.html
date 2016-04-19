@@ -34,7 +34,7 @@
 
 
 
-  <meta name="keywords" content="Objective-C,ReactNative,Component," />
+  <meta name="keywords" content="ShadowSocks,ProxyChains-NG,iTerm2," />
 
 
 
@@ -43,34 +43,28 @@
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
 
 
-<meta name="description" content="Native-Module 基本分为两种
-可见的Module. (显示,原生动画)View 本身继承自RCTView,如果想要在JS中使用,需要再实现一个 Manager
-不可见的Module. (数据,网络,modeling)需要实现 delegate
-
-今天我们来讲讲第二种不可见的Module
-Module 和 method的关系One Module
--&amp;gt; MethodA-&amp;gt; Me">
+<meta name="description" content="参考原文
+安装使用 Homebrew 安装 proxychains-ng1~ $ brew install proxychains-ng
+编辑配置文件1vim /usr/local/etc/proxychains.conf
+在 [ProxyList] 下面（也就是末尾）加入代理类型，代理地址和端口注释掉原来的代理并添加, 1080 就是默认的shadowSocks 本地代理端口号,
+1socks5">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ReactNative-NativeComponent -- 1. 官方指引">
-<meta property="og:url" content="http://xbay.github.io/2016/03/31/React-Native-NativeComponent/index.html">
+<meta property="og:title" content="ShadowSocks+ProxyChains-NG 实现终端(iTerm2)下代理">
+<meta property="og:url" content="http://xbay.github.io/2016/04/19/shadowsocks_proxychainsNG_iterms2/index.html">
 <meta property="og:site_name" content="xbay">
-<meta property="og:description" content="Native-Module 基本分为两种
-可见的Module. (显示,原生动画)View 本身继承自RCTView,如果想要在JS中使用,需要再实现一个 Manager
-不可见的Module. (数据,网络,modeling)需要实现 delegate
-
-今天我们来讲讲第二种不可见的Module
-Module 和 method的关系One Module
--&amp;gt; MethodA-&amp;gt; Me">
-<meta property="og:updated_time" content="2016-03-31T02:16:20.000Z">
+<meta property="og:description" content="参考原文
+安装使用 Homebrew 安装 proxychains-ng1~ $ brew install proxychains-ng
+编辑配置文件1vim /usr/local/etc/proxychains.conf
+在 [ProxyList] 下面（也就是末尾）加入代理类型，代理地址和端口注释掉原来的代理并添加, 1080 就是默认的shadowSocks 本地代理端口号,
+1socks5">
+<meta property="og:updated_time" content="2016-04-19T00:31:09.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ReactNative-NativeComponent -- 1. 官方指引">
-<meta name="twitter:description" content="Native-Module 基本分为两种
-可见的Module. (显示,原生动画)View 本身继承自RCTView,如果想要在JS中使用,需要再实现一个 Manager
-不可见的Module. (数据,网络,modeling)需要实现 delegate
-
-今天我们来讲讲第二种不可见的Module
-Module 和 method的关系One Module
--&amp;gt; MethodA-&amp;gt; Me">
+<meta name="twitter:title" content="ShadowSocks+ProxyChains-NG 实现终端(iTerm2)下代理">
+<meta name="twitter:description" content="参考原文
+安装使用 Homebrew 安装 proxychains-ng1~ $ brew install proxychains-ng
+编辑配置文件1vim /usr/local/etc/proxychains.conf
+在 [ProxyList] 下面（也就是末尾）加入代理类型，代理地址和端口注释掉原来的代理并添加, 1080 就是默认的shadowSocks 本地代理端口号,
+1socks5">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -82,7 +76,7 @@ Module 和 method的关系One Module
 
 
 
-  <title> ReactNative-NativeComponent -- 1. 官方指引 | xbay </title>
+  <title> ShadowSocks+ProxyChains-NG 实现终端(iTerm2)下代理 | xbay </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -196,7 +190,7 @@ Module 和 method的关系One Module
             
             
               
-                ReactNative-NativeComponent -- 1. 官方指引
+                ShadowSocks+ProxyChains-NG 实现终端(iTerm2)下代理
               
             
           </h1>
@@ -205,8 +199,8 @@ Module 和 method的关系One Module
         <div class="post-meta">
           <span class="post-time">
             发表于
-            <time itemprop="dateCreated" datetime="2016-03-31T12:03:15+08:00" content="2016-03-31">
-              2016-03-31
+            <time itemprop="dateCreated" datetime="2016-04-19T08:31:15+08:00" content="2016-04-19">
+              2016-04-19
             </time>
           </span>
 
@@ -229,8 +223,8 @@ Module 和 method的关系One Module
             
               <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2016/03/31/React-Native-NativeComponent/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/03/31/React-Native-NativeComponent/" itemprop="commentsCount"></span>
+              <a href="/2016/04/19/shadowsocks_proxychainsNG_iterms2/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/04/19/shadowsocks_proxychainsNG_iterms2/" itemprop="commentsCount"></span>
               </a>
             </span>
             
@@ -249,34 +243,25 @@ Module 和 method的关系One Module
       
 
       
-        <span itemprop="articleBody"><h2 id="Native-Module-基本分为两种"><a href="#Native-Module-基本分为两种" class="headerlink" title="Native-Module 基本分为两种"></a>Native-Module 基本分为两种</h2><ul>
-<li>可见的Module. (显示,原生动画)<br>View 本身继承自RCTView,如果想要在JS中使用,需要再实现一个 Manager</li>
-<li>不可见的Module. (数据,网络,modeling)<br>需要实现 <rctbridgemodule>delegate</rctbridgemodule></li>
-</ul>
-<p>今天我们来讲讲第二种不可见的Module</p>
-<h3 id="Module-和-method的关系"><a href="#Module-和-method的关系" class="headerlink" title="Module 和 method的关系"></a>Module 和 method的关系</h3><h4 id="One-Module"><a href="#One-Module" class="headerlink" title="One Module"></a>One Module</h4><blockquote>
-<p>-&gt; MethodA<br>-&gt; MethodB<br>…<br>-&gt; MethodN</p>
+        <span itemprop="articleBody"><p><a href="https://segmentfault.com/a/1190000004607285" target="_blank" rel="external">参考原文</a></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>使用 Homebrew 安装 proxychains-ng<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ $ brew install proxychains-ng</span><br></pre></td></tr></table></figure></p>
+<h3 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/local/etc/proxychains.conf</span><br></pre></td></tr></table></figure>
+<p>在 [ProxyList] 下面（也就是末尾）加入代理类型，代理地址和端口<br>注释掉原来的代理并添加, 1080 就是默认的shadowSocks 本地代理端口号,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socks5 127.0.0.1 1080</span><br></pre></td></tr></table></figure>
+<p>如果有的软件支持socks5代理, 比如 <strong>dropbox</strong> ,可以直接设置, </p>
+<blockquote>
+<p>我们在这里搞这么多飞机就是因为, iTerm2 不支持配置代理,而且就算你在系统设置了也不管用.</p>
 </blockquote>
-<h3 id="官方指引"><a href="#官方指引" class="headerlink" title="官方指引"></a><a href="http://facebook.github.io/react-native/docs/native-modules-ios.html#content" target="_blank" rel="external">官方指引</a></h3><ol>
-<li>正常的参数, 所有json格式的参数<br>而且有个强大的Util RCTConvert.h 从字体,颜色,string,number都可以转换</li>
-<li>支持回调 callback, 可以传function进去<br>原生类型是 RCTResponseSenderBlock<br>和传参都是 用RCT_EXPORT_METHOD 声明</li>
-<li><p>支持Promise<br>但是需要用到 RCT_REMAP_METHOD 声明,再辅助两个block<br>RCTPromiseResolveBlock/ RCTPromiseRejectBlock<br>JS 层面 用  ES2016 <strong>async/await</strong> 去写, 这个需要看一下</p>
-</li>
-<li><p>接下来讲多线程<br>methodQueue 是在一个Module下的所有method共享的, 要么这个module是在主线程上执行,要么就是在某个线程上执行. 而且大家可以共享这个线程<br>如果我有一个方法需要单独在新的线程上执行怎么办,比如相对耗时的存储等等.我可以在方法里面 用dispatch_async包一下执行代码,执行完之后可以用 2.里面提到的callback通知外面<br>最后提到了 在不同的Module中共享线程,比较高深</p>
-</li>
-<li><p>导出常量<br>返回Dictionary的native method 在初始化的时候完成赋值,运行时的时候再改变他,js也拿不到最新的值.<br>如果要枚举常量,他建议新建一个RCTConvert的extension</p>
-</li>
-<li>向JS发送Event<br>如何使用 bridge.eventDispatcher, 如何在native send 以及如何在JS subscription. 这样Native 也可作用在JS上了,这是除了 callback的另一种实现.<br>采用的是观察者模式. 如果想用JS作用在Native上直接调取Native 用RCT_EXPORT_METHOD 暴露出来的函数就好了,各种回调,promise,sender伺候你.</li>
-</ol>
-<p>这里多数一句,我们在OC里常用的传递消息的方式有很多 KVO,Delegate,Block. 还有高逼格的NSOperation,GCD 等等.基本上RN都用了.可见facebook的原生功力还是比较深厚的</p>
-<ol>
-<li>最后提到了如何在swift 用RN,然并卵.</li>
-</ol>
-<h3 id="RN-ReactNative"><a href="#RN-ReactNative" class="headerlink" title="RN = ReactNative"></a>RN = ReactNative</h3><p>————</p>
-<h4 id="有兴趣的同学可以读一下具体-Module-和-Method-的原生实现"><a href="#有兴趣的同学可以读一下具体-Module-和-Method-的原生实现" class="headerlink" title="有兴趣的同学可以读一下具体 Module 和 Method 的原生实现"></a>有兴趣的同学可以读一下具体 Module 和 Method 的原生实现</h4><blockquote>
-<p>关于Bridge的一篇facebook的<a href="http://tadeuzagallo.com/blog/react-native-bridge/" target="_blank" rel="external">内部剖析</a><br>如何优化RNApp性能的<a href="https://code.facebook.com/posts/895897210527114/dive-into-react-native-performance/" target="_blank" rel="external">官方介绍</a></p>
-</blockquote>
-<h4 id="next"><a href="#next" class="headerlink" title="next"></a>next</h4><p>下一部分准备按照官方的指引写一个Demo 把这些点传起来</p>
+<p>如果所在的网络很复杂，可能需要在配置文件中启用<br>dynamic_chain - 按照列表中出现的代理服务器的先后顺序组成一条链，如果有代理服务器失效，则自动将其排除，但至少要有一个是有效的<br>然后在 [ProxyList] 下添加多个代理<br>默认：strict_chain - 按照后面列表中出现的代理服务器的先后顺序组成一条链，要求所有的代理服务器都是有效的</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>  proxychains4 curl google.com<br>注意：proxychains支持的是socks，http, https协议.它们以tcp或者udp协议为基础, ping命令用的是 ICMP 协议， proxychains 不支持;</p>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><p>alias 命令别名<br>直接在命令行中输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ $ alias pc=&quot;proxychains4”</span><br></pre></td></tr></table></figure>
+<p>iTerm中前缀补全<br>你输了很长一段命令，然后你突然想使用代理功能，怎么办？<br>我想你应该会复制一下，然后重写；<br>现在你可以这样做：</p>
+<p>在 iTerm -&gt; Preferences -&gt; Profiles -&gt; Keys 中，新建一个快捷键，例如 ⌥(alt) + p ，Action 选择 Send Hex Code，键值为 0x1 0x70 0x63 0x20 0xd，保存生效。这个 HexCode 用 <a href="http://www.rapidtables.com/convert/number/hex-to-ascii.htm" target="_blank" rel="external">hexCodeToAsciiText</a> 就是 “pc”两个字母</p>
+<p>以后命令要代理就直接敲命令，然后 ⌥ + p 即可，这样命令补全也能保留了。<br>比如 git clone, npm install 加速等等.</p>
+<h3 id="推荐-福利"><a href="#推荐-福利" class="headerlink" title="推荐(福利)"></a>推荐(福利)</h3><p>最后推荐一个下载视频的神器 <a href="https://github.com/soimort/you-get" target="_blank" rel="external">you-get</a>可以下载国内外主流的视频网站的视频,made by python3. 也可以配置 proxychains4使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~ $ pc you-get https://www.youtube.com/watch?v=fwoDwajwqdo</span><br></pre></td></tr></table></figure>
+<h3 id="谜团"><a href="#谜团" class="headerlink" title="谜团"></a>谜团</h3><p>关于使用shadowSocks 时,dns是不是一起走了代理了,这里面还有很多网络知识不是特别明白</p>
 </span>
       
     </div>
@@ -285,11 +270,11 @@ Module 和 method的关系One Module
       
         <div class="post-tags">
           
-            <a href="/tags/Objective-C/" rel="tag">#Objective-C</a>
+            <a href="/tags/ShadowSocks/" rel="tag">#ShadowSocks</a>
           
-            <a href="/tags/ReactNative/" rel="tag">#ReactNative</a>
+            <a href="/tags/ProxyChains-NG/" rel="tag">#ProxyChains-NG</a>
           
-            <a href="/tags/Component/" rel="tag">#Component</a>
+            <a href="/tags/iTerm2/" rel="tag">#iTerm2</a>
           
         </div>
       
@@ -298,17 +283,13 @@ Module 和 method的关系One Module
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/02/26/scalaz_optionT/" rel="next" title="用scalaz的optionT让业务代码变得更简洁">
-                <i class="fa fa-chevron-left"></i> 用scalaz的optionT让业务代码变得更简洁
+              <a href="/2016/03/31/React-Native-NativeComponent/" rel="next" title="ReactNative-NativeComponent -- 1. 官方指引">
+                <i class="fa fa-chevron-left"></i> ReactNative-NativeComponent -- 1. 官方指引
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/04/19/shadowsocks_proxychainsNG_iterms2/" rel="prev" title="ShadowSocks+ProxyChains-NG 实现终端(iTerm2)下代理">
-                ShadowSocks+ProxyChains-NG 实现终端(iTerm2)下代理 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -433,7 +414,7 @@ Module 和 method的关系One Module
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Native-Module-基本分为两种"><span class="nav-number">1.</span> <span class="nav-text">Native-Module 基本分为两种</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Module-和-method的关系"><span class="nav-number">1.1.</span> <span class="nav-text">Module 和 method的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#One-Module"><span class="nav-number">1.1.1.</span> <span class="nav-text">One Module</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#官方指引"><span class="nav-number">1.2.</span> <span class="nav-text">官方指引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RN-ReactNative"><span class="nav-number">1.3.</span> <span class="nav-text">RN = ReactNative</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#有兴趣的同学可以读一下具体-Module-和-Method-的原生实现"><span class="nav-number">1.3.1.</span> <span class="nav-text">有兴趣的同学可以读一下具体 Module 和 Method 的原生实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#next"><span class="nav-number">1.3.2.</span> <span class="nav-text">next</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编辑配置文件"><span class="nav-number">2.</span> <span class="nav-text">编辑配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-number">3.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化"><span class="nav-number">4.</span> <span class="nav-text">优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推荐-福利"><span class="nav-number">5.</span> <span class="nav-text">推荐(福利)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谜团"><span class="nav-number">6.</span> <span class="nav-text">谜团</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
@@ -488,9 +469,9 @@ Module 和 method的关系One Module
 
     <script type="text/javascript">
       var disqus_shortname = 'xbay';
-      var disqus_identifier = '2016/03/31/React-Native-NativeComponent/';
-      var disqus_title = 'ReactNative-NativeComponent -- 1. 官方指引';
-      var disqus_url = 'http://xbay.github.io/2016/03/31/React-Native-NativeComponent/';
+      var disqus_identifier = '2016/04/19/shadowsocks_proxychainsNG_iterms2/';
+      var disqus_title = 'ShadowSocks+ProxyChains-NG 实现终端(iTerm2)下代理';
+      var disqus_url = 'http://xbay.github.io/2016/04/19/shadowsocks_proxychainsNG_iterms2/';
 
       function run_disqus_script(disqus_script){
         var dsq = document.createElement('script');
